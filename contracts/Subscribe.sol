@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.0;
+import "@openzeppelin/contracts/utils/math/Math.sol";
 import "hardhat/console.sol";
 import "./Baskets.sol";
 import "./SwapUniswapV3.sol";
@@ -18,6 +19,8 @@ contract Subscribe is Baskets, Swap {
     //     uint transactionAmount; // let's figure out the unit later
     //     string transactionType; // deposit, exit, partial sell
     // }
+
+    using Math for uint;
 
     address private constant WETH = 0xc778417E063141139Fce010982780140Aa0cD5Ab;
     //mapping(string => address) userCoinToAddress; // user token code to token address
@@ -107,7 +110,7 @@ contract Subscribe is Baskets, Swap {
                     userToTokenIndex[msg.sender][_basketID][tokenArray[i]] =
                     userToActiveTokenArray[msg.sender][_basketID].length;
                 }
-                // update user holding mapping
+                // add amountOut to user holding mapping
                 userToHolding[msg.sender][_basketID][tokenArray[i]] += amountOut;
             }
 
@@ -123,40 +126,41 @@ contract Subscribe is Baskets, Swap {
                     userToTokenIndex[msg.sender][_basketID][tokenArray[i]] =
                     userToActiveTokenArray[msg.sender][_basketID].length;
                 }
-                // update user holding mapping
+                // add amountOut to user holding mapping
                 userToHolding[msg.sender][_basketID][tokenArray[i]] += amountOut;
             }
         }
     }
 
-
+    /// only apply if user decides to exit all the holding related to a basket
     function exit(string memory _basketID, address _tokenOut) external {
 
-        /* execute the trades when user decides to exit a basket */
-
         // ETH can't be accepted as a withdraw token
-        require(_tokenOut != address(0), "user can't receive ETH as token out");
+        require(_tokenOut != address(0), "user can't receive ETH");
 
         // // update the transaction mapping subscriberToTransaction
         // Transaction memory userTransaction = Transaction(block.timestamp, msg.sender, _tokenOut, _basketID, 0, "exit");
         // userToTransaction[msg.sender].push(userTransaction);
 
-        // send detailed transaction arrays for swapping
-        // loop through the current holding in a basket
+        // loop through the current holding and exit
         address[] memory tokenArray = userToActiveTokenArray[msg.sender][_basketID];
         for (uint i = 0; i < tokenArray.length; i ++) {
-            if (tokenArray[i] != address(0)) { // if it's zero address, it means token is deleted and hence not active
-                // swap the token for the entire holding
-                uint _amountOut = Swap.swapExactTokenInForTokenOut(tokenArray[i], _tokenOut, userToHolding[msg.sender][_basketID][tokenArray[i]]);
+            if (tokenArray[i] != address(0)) { // if it's address(0), it means token is deleted hence zero holding
+                // compare the balance with holding mapping, taking the lower value
+                uint tokenBalance = Math.min(userToHolding[msg.sender][_basketID][tokenArray[i]], ERC20(tokenArray[i]).balanceOf(msg.sender));
 
-                // update the holder mapping and token array (delete the token from tokenArray)
-                userToHolding[msg.sender][_basketID][tokenArray[i]] = 0;
-                delete userToActiveTokenArray[msg.sender][_basketID][userToTokenIndex[msg.sender][_basketID][tokenArray[i]]];
-                userToTokenIndex[msg.sender][_basketID][tokenArray[i]] = 0;
+                if (tokenBalance > 0) { // if user still holds something, we will sell too
+                    // swap the token for the entire holding
+                    uint _amountOut = Swap.swapExactTokenInForTokenOut(tokenArray[i], _tokenOut, tokenBalance);
+
+                    // update the holder mapping and token array (delete the token from tokenArray)
+                    userToHolding[msg.sender][_basketID][tokenArray[i]] = 0;
+                    delete userToActiveTokenArray[msg.sender][_basketID][userToTokenIndex[msg.sender][_basketID][tokenArray[i]]];
+                    userToTokenIndex[msg.sender][_basketID][tokenArray[i]] = 0;
+                }
             }
         }
     }
-
 
 
     function getPriceETH(address _pair) public view returns(uint) {

@@ -20,9 +20,31 @@ import {
 export default function User(props) {
   let navigate = useNavigate();
   const [rows, setRows] = React.useState([]);
+  const [amounts, setAmounts] = React.useState(null);
 
   React.useEffect(() => {
+    const fetchAmounts = async () => {
+      let tokenAmounts = [];
+      for (const token in props.subscribedBasket.weights) {
+        const returnedAddress = await getContractAddress(token, props.provider);
+        const tokenAmount = await getUserHoldingForBasket(
+          props.defaultAccount,
+          props.subscribedBasket._id,
+          returnedAddress,
+          props.provider
+        );
+        tokenAmounts.push(tokenAmount);
+      }
+      setAmounts(tokenAmounts);
+    };
+
     if (props.subscribedBasket != null) {
+      fetchAmounts();
+    }
+  }, [props]);
+
+  React.useEffect(() => {
+    if (amounts != null) {
       let idx = 1;
       let rowsToBeSet = [];
       for (const token in props.subscribedBasket.weights) {
@@ -30,12 +52,14 @@ export default function User(props) {
           id: idx,
           token: token,
           weight: props.subscribedBasket.weights[token],
+          amount: amounts[idx - 1],
         });
         idx += 1;
       }
       setRows(rowsToBeSet);
     }
-  }, [props]);
+  }, [amounts]);
+
   return (
     <Page title="User | Minimal-UI">
       <Container>
@@ -64,7 +88,6 @@ export default function User(props) {
               : true
           }
           onClick={() => {
-            
             props.setBasketToSubscribe(props.subscribedBasket);
             navigate("../subscribe", { replace: true });
           }}
@@ -79,18 +102,20 @@ export default function User(props) {
           }
           onClick={async () => {
             const tokens = rows.map((row) => row.token);
-            console.log("tokens",tokens);
+            // console.log("tokens", tokens);
             for (let token of tokens) {
               token = token.toUpperCase();
-              
+
               const returnedAddress = await getContractAddress(
                 token,
                 props.provider
               );
-              console.log("trying new function");
-              await getUserHoldingForBasket(props.defaultAccount,props.subscribedBasket._id,returnedAddress, props.provider);
-              console.log("checking user approval");
-              await getApproval(returnedAddress, props.provider, props.defaultAccount);
+              // console.log("checking user approval");
+              await getApproval(
+                returnedAddress,
+                props.provider,
+                props.defaultAccount
+              );
             }
             const desiredToken = await getContractAddress(
               "WETH",
@@ -104,7 +129,6 @@ export default function User(props) {
               navigate
             );
             console.log("Basket Exited.");
-            
           }}
         >
           Exit Basket

@@ -82,7 +82,6 @@ contract Subscribe is Baskets, Swap {
         // frontend sets ETH to be address(0), in this case we need to use a different swap function
         // as it's not ERC20
         if (_tokenIn == address(0) && _buy) { // has to be buy transaction
-            require(msg.value == _amountIn, "value called != value passed");
 
             uint amountOut = Swap.convertExactEthToToken(_tokenOut, _amountIn);
             // if this is a new holding, we need to update the holding list mapping and holding index mapping
@@ -180,7 +179,7 @@ contract Subscribe is Baskets, Swap {
     }
 
     /// get the price for token vs ETH from chainlink oracle, address of that pair needed
-    function getPrice(address _pair) internal view returns(uint) {
+    function getPrice(address _pair) public view returns(uint) {
         AggregatorV3Interface priceFeed = AggregatorV3Interface(_pair);
         (,int256 answer,,,) = priceFeed.latestRoundData();
         return uint(answer);
@@ -309,7 +308,13 @@ contract Subscribe is Baskets, Swap {
     }
 
 
-
+    function getUserHoldingForToken(
+        address user,
+        string memory _basketID,
+        address _token
+    ) public view returns (uint256) {
+        return userToHolding[user][_basketID][_token];
+    }
 
 }
 

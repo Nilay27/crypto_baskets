@@ -12,6 +12,7 @@ import NotFound from "./pages/Page404";
 import CreateBasket from "./pages/CreateBasket";
 import Subscribe from "./pages/Subscribe";
 import SubscribedBasket from "./pages/SubscribedBasket";
+import InvestMore from "./pages/InvestMore"
 
 // ----------------------------------------------------------------------
 // import SubscribeBasket from "./abis/Subscribe.json";
@@ -107,6 +108,17 @@ export default function Router() {
               defaultAccount={defaultAccount}
               basketToSubscribe={basketToSubscribe}
               setBasketSubscribed={setBasketSubscribed}
+            />
+          ),
+        },
+        {
+          path: "invest_more",
+          element: (
+            <InvestMore
+              provider={provider}
+              defaultAccount={defaultAccount}
+              basketToSubscribe={basketToSubscribe}
+              setBasketSubscribed={setBasketToSubscribe}
             />
           ),
         },

@@ -7,6 +7,7 @@ const columns = [
   { field: "token", width: 150 },
   { field: "weight", width: 80, type: "number" },
   { field: "amount", width: 200, type: "number" },
+  { field: "value", width: 200, type: "number" },
 ];
 
 export default function UpdateRowsProp(props) {

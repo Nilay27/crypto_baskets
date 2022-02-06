@@ -11,6 +11,7 @@ import {
   getContractAddress,
   exitBasket,
   getApproval,
+  getTokenValue,
 } from "../utils/getContractAddress";
 
 // ----------------------------------------------------------------------
@@ -21,6 +22,7 @@ export default function User(props) {
   let navigate = useNavigate();
   const [rows, setRows] = React.useState([]);
   const [amounts, setAmounts] = React.useState(null);
+  const [values, setValue] = React.useState(null);
 
   React.useEffect(() => {
     const fetchAmounts = async () => {
@@ -36,6 +38,7 @@ export default function User(props) {
         tokenAmounts.push(tokenAmount);
       }
       setAmounts(tokenAmounts);
+      console.log('first tokenAmounts', tokenAmounts);
     };
 
     if (props.subscribedBasket != null) {
@@ -44,7 +47,28 @@ export default function User(props) {
   }, [props]);
 
   React.useEffect(() => {
-    if (amounts != null) {
+    const fetchAmounts = async () => {
+      let tokenValues = [];
+      console.log(props.subscribedBasket);
+      for (const token in props.subscribedBasket.weights) {
+        // const returnedAddress = await getContractAddress(token, props.provider);
+        const tokenAmount = await getTokenValue(
+          token,
+          props.provider
+        );
+        tokenValues.push(tokenAmount);
+      }
+      console.log(tokenValues);
+      setValue(tokenValues);
+    };
+
+    if (props.subscribedBasket != null) {
+      fetchAmounts();
+    }
+  }, [props]);
+
+  React.useEffect(() => {
+    if (amounts != null && values!=null) {
       let idx = 1;
       let rowsToBeSet = [];
       for (const token in props.subscribedBasket.weights) {
@@ -53,12 +77,14 @@ export default function User(props) {
           token: token,
           weight: props.subscribedBasket.weights[token],
           amount: amounts[idx - 1],
+          value: values[idx-1]*amounts[idx - 1],
         });
-        idx += 1;
+        console.log(values[idx-1])
+        idx += 1; 
       }
       setRows(rowsToBeSet);
     }
-  }, [amounts]);
+  }, [amounts,values]);
 
   return (
     <Page title="User | Minimal-UI">
@@ -89,10 +115,10 @@ export default function User(props) {
           }
           onClick={() => {
             props.setBasketToSubscribe(props.subscribedBasket);
-            navigate("../subscribe", { replace: true });
+            navigate("../invest_more", { replace: true });
           }}
         >
-          Invest More
+          Change Composition
         </Button>
         <Button
           disabled={

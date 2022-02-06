@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { addresses } from "../assets/Addresses/rinkeby";
+import { addresses,chainlinkOraclesRinkeby } from "../assets/Addresses/rinkeby";
 import SampleContract from "../abis/contract-address.json";
 import SubscribeBasket from "../abis/Subscribe.json";
 import axios from "axios";
@@ -35,6 +35,25 @@ export async function getContractAddress(token, provider) {
   return addresses[token][0];
 }
 
+export async function getTokenValue(token, provider){
+  if (typeof window.ethereum !== "undefined") {
+    const signer = provider.getSigner();
+    const routerAddress = SampleContract.SampleContract;
+    const routerContract = new ethers.Contract(
+      routerAddress,
+      SubscribeBasket.abi,
+      signer
+    );
+    var pairAddress = chainlinkOraclesRinkeby[token];
+    try {
+      const value = await routerContract.getPrice(pairAddress);
+      return value/10**8;
+    } catch (err) {
+      console.log("Error: ", err);
+    }
+  }
+}
+
 export async function getUserHoldingForBasket(
   defaultAccount,
   _basketId,
@@ -67,7 +86,7 @@ export async function getUserHoldingForBasket(
       // console.log("balanceInTokenAmount", balanceInTokenAmount);
       return balanceInTokenAmount;
     } catch (err) {
-      // console.log("Error: ", err);
+      console.log("Error: ", err);
     }
   }
 }
@@ -174,10 +193,6 @@ export async function subscribeToBasket(
         value: amount,
       });
       const data = await transaction.wait();
-      const event = await data.events.find((event) => event.event === "log");
-      // console.log("event.args");
-      // console.log(event);
-      const [Transaction] = await event.args;
       // console.log(Transaction);
       const token_amounts = tokenNames.map((name) => 0);
       client
@@ -198,13 +213,65 @@ export async function subscribeToBasket(
           }
         })
         .catch((error) => {
-          // console.log("Error occurred: ", error);
+          console.log("Error occurred: ", error);
         });
     } catch (err) {
-      // console.log("Error: ", err);
+      console.log("Error: ", err);
     }
   }
 }
+export async function addFunds(
+  provider,
+  _basketID,
+  _tokenIn,
+  _amount,
+) {
+  if (typeof window.ethereum !== "undefined") {
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(
+      SampleContract.SampleContract,
+      SubscribeBasket.abi,
+      signer
+    );
+
+    try {
+      const amount = ethers.utils.parseEther(_amount);
+
+      const transaction = await contract.add(_basketID, _tokenIn, amount, {
+        value: amount,
+      });
+      const data = await transaction.wait();
+    } catch (err) {
+      console.log("Error: ", err);
+    }
+  }
+}
+
+export async function partialExit(
+  provider,
+  _basketID,
+  _tokenIn,
+  _amount,
+) {
+  if (typeof window.ethereum !== "undefined") {
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(
+      SampleContract.SampleContract,
+      SubscribeBasket.abi,
+      signer
+    );
+
+    try {
+      const amount = ethers.utils.parseEther(_amount);
+
+      const transaction = await contract.sell(_basketID, _tokenIn, amount);
+      const data = await transaction.wait();
+    } catch (err) {
+      console.log("Error: ", err);
+    }
+  }
+}
+
 
 export async function exitBasket(
   provider,
@@ -226,8 +293,6 @@ export async function exitBasket(
       // console.log("input token", _tokenOut);
       const transaction = await contract.exit(_basketID, _tokenOut);
       const data = await transaction.wait();
-      const event = await data.events.find((event) => event.event === "log");
-      const [Transaction] = await event.args;
       // console.log(Transaction);
       client
         .post("/subscriptions/unsubscribe", {

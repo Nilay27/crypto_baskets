@@ -19,29 +19,7 @@ contract Subscribe is Baskets, Swap {
     mapping(address => mapping(string => mapping(address => uint256))) userToTokenIndex; // track userToActiveTokenArray index position for tokens + 1, so 0 is no holding
     mapping(string => mapping(address => uint256)) basketToWeight; //temp utility mapping, basket to token to weight
 
-    constructor() {
-        // hardcode the address for now, can deal with them on front end
-
-        // userCoinToAddress["LINK"] = 0x01BE23585060835E02B77ef475b0Cc51aA1e0709;
-        // userCoinToAddress["WBTC"] = 0x577D296678535e4903D59A4C929B718e1D575e0A;
-        // userCoinToAddress["USDC"] = 0xeb8f08a975Ab53E34D8a0330E0D34de942C95926;
-        // userCoinToAddress["DAI"] = 0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa;
-        // userCoinToAddress["MKR"] = 0xF9bA5210F91D0474bd1e1DcDAeC4C58E359AaD85;
-
-        tokenToLinkPriceAddress[WETH][
-            0xeb8f08a975Ab53E34D8a0330E0D34de942C95926
-        ] = 0xdCA36F27cbC4E38aE16C4E9f99D39b42337F6dcf; // USDC rinkeby
-        tokenToLinkPriceAddress[WETH][
-            0x577D296678535e4903D59A4C929B718e1D575e0A
-        ] = 0x2431452A0010a43878bF198e170F6319Af6d27F4; // BTC rinkeby
-        tokenToLinkPriceAddress[WETH][
-            0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa
-        ] = 0x74825DbC8BF76CC4e9494d0ecB210f676Efa001D; // DAI
-        // ["0x577D296678535e4903D59A4C929B718e1D575e0A", "0x01BE23585060835E02B77ef475b0Cc51aA1e0709"]
-        //0x0000000000000000000000000000000000000000;
-    }
-
-    /// Break basket information into token array, and component amount array so that we can send trades
+    /// @dev Break basket information into token array, and component amount array so that we can send trades
     function basketToComponent(string memory _basketID, uint256 _amount)
         public
         view
@@ -60,18 +38,8 @@ contract Subscribe is Baskets, Swap {
         return (tokenArray, amountArray);
     }
 
-    // function sendFee(string memory _coin, address payable _to, uint _amount) public payable {
-    //     /* send subscriber fee, need to modify this probably */
 
-    //     if (keccak256(abi.encodePacked(_coin)) == keccak256(abi.encodePacked("ETH"))){
-    //         (bool success, ) = _to.call {value : _amount}("");
-    //         require(success, "fail to send the subscriber fee to creator");
-    //     } else {
-    //         ERC20(userCoinToAddress[_coin]).transfer(_to, _amount);
-    //     }
-    // }
-
-    /// helper function on transaction, _buy is a boolean on buy or sell
+    /// @dev helper function on transaction, _buy is a boolean on buy or sell
     function transaction(
         address _tokenIn,
         address _tokenOut,
@@ -259,7 +227,7 @@ contract Subscribe is Baskets, Swap {
         return (totalBalance, activeTokenArray, tokenBalance);
     }
 
-    /** rebalance the holding according to the current basket
+    /** @dev rebalance the holding according to the current basket
      * logic is as follows:
      * 1. find the current basket holding in _balanceToken by total and by token, calculate the targetAmount
      * 2. loop through the current basket, create the mapping and if not in current holding, then initiate the holding
@@ -393,124 +361,3 @@ contract Subscribe is Baskets, Swap {
         return userToHolding[user][_basketID][_token];
     }
 }
-
-// /// rebalance the holding according to the current basket
-// function reblance(string memory _basketID) external {
-
-//     // get user's total balance and token balance in ETH for a basket, ETH is just a common unit to convert
-//     (uint balanceETH, address[] memory activeTokenArray, uint[] memory balanceArrayETH) = getBasketBalanceETH(msg.sender, _basketID);
-
-//     // current basket information
-//     Baskets.Basket memory basket = getBasketById(_basketID);
-
-//     uint tradeCounter = 0;
-//     address[] memory tradeTokenArray = new address[](activeTokenArray.length + basket.tokens.length);
-//     uint[] memory tradeETHArray = new uint[](activeTokenArray.length + basket.tokens.length);
-
-//     // integrate the current basket into weight mapping, and check for new tokens
-//     for (uint i = 0; i < basket.tokens.length; i ++) {
-//         basketToWeight[_basketID][basket.tokens[i]] = basket.weights[i];
-//         if (userToTokenIndex[msg.sender][_basketID][basket.tokens[i]] == 0) { // no holding
-//             // if no holding, we need to buy them
-//             tradeTokenArray[tradeCounter] = basket.tokens[i];
-//             tradeETHArray[tradeCounter] = balanceETH * basket.weights[i];
-//             tradeCounter ++;
-//         }
-//     }
-
-//     // loop through the current holding and calculate the trades
-//     for (uint i = 0; i < activeTokenArray.length; i ++) {
-//         if (activeTokenArray[i] != address(0)) {
-//             if (basketToWeight[_basketID][activeTokenArray[i]] * balanceETH != balanceArrayETH[i]) {
-//                 tradeTokenArray[tradeCounter] = activeTokenArray[i];
-//                 tradeETHArray[tradeCounter] = basketToWeight[_basketID][activeTokenArray[i]] * balanceETH - balanceArrayETH[i];
-//                 tradeCounter ++;
-//             }
-//         }
-//     }
-
-//     // loop through the trade array and trade through WETH
-//     for (uint i = 0; i < tradeTokenArray.length; i ++) {
-//         if (tradeETHArray[i] > 0) { // if it's a buy we buy with WETH
-//             //getPriceETH(address _pair)
-//             uint _amountOut = Swap.swapExactTokenInForTokenOut(WETH, tradeTokenArray[i], tradeETHArray[i]);
-
-//             // update the holder mapping
-//             userToHolding[msg.sender][_basketID][tradeTokenArray[i]] += _amountOut;
-
-//             // update the token index if not existant before
-//             if (userToTokenIndex[msg.sender][_basketID][basket.tokens[i]] == 0) {
-//                 userToActiveTokenArray[msg.sender][_basketID].push(tradeTokenArray[i]);
-//                 userToTokenIndex[msg.sender][_basketID][tradeTokenArray[i]] = userToActiveTokenArray[msg.sender][_basketID].length;
-//             }
-//         } else {
-//             uint _amountOut = Swap.swapExactTokenInForTokenOut(tradeTokenArray[i], WETH, tradeETHArray[i] * getPriceETH(tokenToLinkPriceAddress[tradeTokenArray[i]]));
-
-//             // update the holder mapping
-//             userToHolding[msg.sender][_basketID][tradeTokenArray[i]] = basketToWeight[_basketID][tradeTokenArray[i]] * balanceETH * getPriceETH(tokenToLinkPriceAddress[tradeTokenArray[i]]);
-//             if (basketToWeight[_basketID][activeTokenArray[i]] == 0) {
-//                 delete userToActiveTokenArray[msg.sender][_basketID][userToTokenIndex[msg.sender][_basketID][activeTokenArray[i]]];
-//                 userToTokenIndex[msg.sender][_basketID][activeTokenArray[i]] = 0;
-//             }
-//         }
-
-//         }
-//     }
-
-// }
-
-// function sell(string memory _basketID, string memory _tokenOut, uint _amount) public validUserCoin(_tokenOut) {
-//     /* execute the trades when user decides to partial sell a basket */
-
-//     // ETH can't be worked as a withdraw token
-//     require(keccak256(abi.encodePacked(_tokenOut)) != keccak256(abi.encodePacked("ETH")), "user can't receive ETH as token out");
-
-//     // get user's total balance and token balance in ETH for a basket
-//     (uint balanceETH, uint[] memory balanceArrayETH) = getBasketBalanceETH(msg.sender, _basketID);
-
-//     // price is the _tokenOut/ETH
-//     uint _tokenOutPrice;
-//     if (keccak256(abi.encodePacked(_tokenOut)) == keccak256(abi.encodePacked("WETH"))){
-//         _tokenOutPrice = 1;
-//     } else {
-//         _tokenOutPrice = getPriceETH(tokenToLinkPriceAddress[userCoinToAddress[_tokenOut]]);
-//     }
-
-//     // check if the balance is enough to cover _amount
-//     require(balanceETH >= _amount * _tokenOutPrice, "Insufficient balance to cover withdraw");
-
-//     // update the transaction mapping userToTransaction
-//     userToTransaction[msg.sender].push(Transaction(block.timestamp, msg.sender, _tokenOut, _basketID, _amount, "partial sell"));
-
-//     // target remaining amount in ETH
-//     uint remainingBalanceETH = balanceETH - _amount * _tokenOutPrice;
-
-//     // update the weight mapping in the temp mapping
-//     // Baskets.Basket memory basket = Baskets.getBasketById(_basketID);
-//     for (uint i = 0; i < Baskets.getBasketById(_basketID).tokens.length; i ++) {
-//         basketToWeight[_basketID][Baskets.getBasketById(_basketID).tokens[i]] = Baskets.getBasketById(_basketID).weights[i];
-//     }
-
-//     // loop through the active token list and try to achieve the target weight
-//     address[] memory tokenArray = userToActiveTokenArray[msg.sender][_basketID];
-//     for (uint i = 0; i < tokenArray.length; i ++) {
-//         if (tokenArray[i] != address(0)) { // if the token still has value
-//             // price to token tokenArray[i]
-//             uint tokenPrice = getPriceETH(tokenToLinkPriceAddress[tokenArray[i]]);
-//             // in token unit, balanceArrayETH is in the same order of tokenArray
-//             uint currentTokenAmount = balanceArrayETH[i] / tokenPrice;
-//             // target remaining amount in token unit
-//             uint remainingAmount = remainingBalanceETH * basketToWeight[_basketID][tokenArray[i]] / tokenPrice;
-//             // only sell if current token amount is more than target remaining amount
-//             if (currentTokenAmount > remainingAmount) {
-//                 uint _amountOut = Swap.swapExactTokenInForTokenOut(tokenArray[i], userCoinToAddress[_tokenOut], currentTokenAmount - remainingAmount);
-//                 // update the holder mapping
-//                 userToHolding[msg.sender][_basketID][tokenArray[i]] = remainingAmount;
-//                 if (remainingAmount == 0) {
-//                     delete userToActiveTokenArray[msg.sender][_basketID][userToTokenIndex[msg.sender][_basketID][tokenArray[i]]];
-//                 }
-//             }
-//         }
-
-//     }
-//     emit log(Transaction(block.timestamp, msg.sender, _tokenOut, _basketID, _amount, "partial sell"));

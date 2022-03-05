@@ -47,6 +47,7 @@ A Microservice which will notify the user of investment due date and take approv
 -   Install all dependencies:
 
     ```
+    cd crypto_baskets/
     npm install
     ```
 
@@ -54,5 +55,17 @@ A Microservice which will notify the user of investment due date and take approv
     ```
     npx hardhat test
     ```
-## Notes
 
+- Run the Code on localHost:3000:
+    ```
+    npm start
+    ``` 
+## Security Considerations
+
+-   The Repository is currently not Audited and Does is only meant for testing purposes on Testnets (Rinkeby, Ropsten etc.)
+
+## Areas For Improvement
+
+- Cleanup Subscribe.sol, add NatSpec and make it gas optimised
+- Write Tests for Subscribe.sol
+- Add functionality of Exact output refund ETH in case of ExactOutPutSingle

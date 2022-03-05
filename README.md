@@ -35,3 +35,27 @@ Performs swaps on uniswap
 A decentralized database to store user-data i.e their public address and corresponding basket subscribed.
 A Microservice which will notify the user of investment due date and take approval from the user to trigger the contract on regular intervals to perform systematic payment.
 
+*Note* - The expectation is for you to write the tests to validate the contracts follow the specs. Once you understand whats asked of the contracts, you will realize thats its not that hard to get a basic working version. Tests will take a little more work though.  You can take a look at the pet park assignment tests for some inspiration and use [this](https://hardhat.org/tutorial/testing-contracts.html) for reference
+
+
+# Installation
+
+    ```
+    git clone https://github.com/Nilay27/crypto_baskets.git
+    ```
+
+-   Install all dependencies
+
+    ```
+    npm install
+    ```
+
+-   Run Tests
+    ```
+    npx hardhat test
+    ```
+## Notes
+
+-   Prefer using OpenZeppelin contracts instead of implementing your own.
+-   Use events where necessary.
+-   Write tests for your contracts. Add them in `test` directory.

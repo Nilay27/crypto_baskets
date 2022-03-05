@@ -10,7 +10,6 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract Subscribe is Baskets, Swap {
     using Math for uint256;
-
     address private constant WETH = 0xc778417E063141139Fce010982780140Aa0cD5Ab;
     mapping(address => mapping(address => address)) tokenToLinkPriceAddress; // first leg to second leg to chainlink oracle address
     mapping(address => mapping(string => mapping(address => uint256)))
@@ -37,7 +36,6 @@ contract Subscribe is Baskets, Swap {
         }
         return (tokenArray, amountArray);
     }
-
 
     /// @dev helper function on transaction, _buy is a boolean on buy or sell
     function transaction(
@@ -112,15 +110,6 @@ contract Subscribe is Baskets, Swap {
         address _tokenIn,
         uint256 _amount
     ) external payable {
-        // // update the transaction mapping userToTransaction
-        // Transaction memory userTransaction = Transaction(block.timestamp, msg.sender, _tokenIn, _basketID, _amount, "deposit");
-        // userToTransaction[msg.sender].push(userTransaction);
-
-        // pay the subscriber fee to creator
-        // address payable creator = payable(Baskets.getBasketById(_basketID).basketOwner);
-        // sendFee(_tokenIn, creator, uint(_amount * 1 / 100)); // decidie later how much to charge
-        // uint transactionAmount = uint(_amount - _amount * 1 / 100);
-
         require(_amount > 0, "amount has to be positive");
         // break basket deposit into trade amount by tokens
         (
@@ -143,11 +132,6 @@ contract Subscribe is Baskets, Swap {
     function exit(string memory _basketID, address _tokenOut) external {
         // ETH can't be accepted as a withdraw token
         require(_tokenOut != address(0), "user can't receive ETH");
-
-        // // update the transaction mapping subscriberToTransaction
-        // Transaction memory userTransaction = Transaction(block.timestamp, msg.sender, _tokenOut, _basketID, 0, "exit");
-        // userToTransaction[msg.sender].push(userTransaction);
-
         // loop through the current holding and exit
         address[] memory tokenArray = userToActiveTokenArray[msg.sender][
             _basketID

@@ -10,14 +10,12 @@ interface IUniswapRouter is ISwapRouter {
 }
 
 contract Swap {
-
-
     /**
         @dev Router used to interact with V3 pools and perform Swaps
     */
-    IUniswapRouter public constant uniswapRouter = IUniswapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564);
+    IUniswapRouter public constant uniswapRouter =
+        IUniswapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564);
     address private constant WETH = 0xc778417E063141139Fce010982780140Aa0cD5Ab; // TODO: change for mainnet
-
 
     /**
         @notice Swaps `amountIn` of one _tokenIn for as much as possible of another token _tokenOut
@@ -30,7 +28,8 @@ contract Swap {
         uint256 amountIn
     ) internal returns (uint256 amountOut) {
         require(amountIn > 0, "Must pass non 0 input amount");
-        //check whether the token has been allowed by the user for the amount given
+
+        //check whether _tokenIn has been allowed by the user for the amount given
         uint256 allowance = IERC20(_tokenIn).allowance(
             msg.sender,
             address(this)
@@ -44,7 +43,7 @@ contract Swap {
             amountIn
         );
 
-        // Approve the router to spend _tokenIn.
+        // Approve uniswapRouter to spend _tokenIn.
         TransferHelper.safeApprove(_tokenIn, address(uniswapRouter), amountIn);
 
         uint256 deadline = block.timestamp + 15; // TODO : using 'now' for convenience, for mainnet pass deadline from frontend!
@@ -69,7 +68,6 @@ contract Swap {
         amountOut = uniswapRouter.exactInputSingle(params);
         return amountOut;
     }
-    
 
     /**
         @notice Swaps `amountIn` of ETH(WETH) for as much as possible of _tokenOut
@@ -80,6 +78,7 @@ contract Swap {
         internal
         returns (uint256 amountOut)
     {
+        require(_amountIn > 0, "Must pass non 0 input amount");
         uint256 deadline = block.timestamp + 15; // TODO : using 'now' for convenience, for mainnet pass deadline from frontend!
         address _tokenIn = WETH;
         uint24 fee = 3000;

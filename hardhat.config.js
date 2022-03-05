@@ -21,10 +21,6 @@
         url: `https://rinkeby.infura.io/v3/${ALCHEMY_API_KEY}`,
         accounts: [`0x${WALLET_PRIVATE_KEY}`]
       },
-      // polygon: {
-      //       url: `https://polygon-mumbai.infura.io/v3/${POLYGON_ALCHEMY_API_KEY}`,
-      //       accounts: [`0x${POLYGON_WALLET_PRIVATE_KEY}`]
-      //     }
    }
  }
  

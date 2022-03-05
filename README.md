@@ -39,23 +39,20 @@ A Microservice which will notify the user of investment due date and take approv
 
 
 # Installation
-
+-  Clone this Repo:
     ```
     git clone https://github.com/Nilay27/crypto_baskets.git
     ```
 
--   Install all dependencies
+-   Install all dependencies:
 
     ```
     npm install
     ```
 
--   Run Tests
+-   Run Tests:
     ```
     npx hardhat test
     ```
 ## Notes
 
--   Prefer using OpenZeppelin contracts instead of implementing your own.
--   Use events where necessary.
--   Write tests for your contracts. Add them in `test` directory.

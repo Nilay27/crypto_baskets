@@ -20,12 +20,12 @@ This contract creates the baskets with the user given weight inputs and also map
 
 ### 2. Subscribe.sol
 This has multiple methods: 
-- a. add - to subscribe to a basket
-- b. exit - to completely exit the basket
-- c. invest more - to invest more as a part of recurring payment
-- d. partial exit - if the user wants to exit partially
-- e. rebalance - if the weights of the baskets are changed, this function rebalances the basket position accordingly
-- f. getPrice-  gets prices of the tokens from Chainlink in order to determine which token should be bought in what proportion while rebalancing or depositing more. 
+- add - to subscribe to a basket
+- exit - to completely exit the basket
+- invest more - to invest more as a part of recurring payment
+- partial exit - if the user wants to exit partially
+- rebalance - if the weights of the baskets are changed, this function rebalances the basket position accordingly
+- getPrice-  gets prices of the tokens from Chainlink in order to determine which token should be bought in what proportion while rebalancing or depositing more. 
 
 ### 3. Swap.sol
 Performs swaps on uniswap

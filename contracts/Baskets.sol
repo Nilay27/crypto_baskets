@@ -5,7 +5,6 @@ import "hardhat/console.sol";
 
 contract Baskets is Ownable {
     event basketCreated(address owner, Basket basket);
-    event weightsChanged(string basketId, Basket basket);
     //mapping of creators to the baskets created by them
     mapping(address => Basket[]) creators;
     //mapping of basketId to Basket
@@ -92,14 +91,12 @@ contract Baskets is Ownable {
             uniqueBasketMapping[basketId].weights.length == weights.length,
             "new and old basket weights are not of equal lengths"
         );
-        Basket memory basket;
-        basket = uniqueBasketMapping[basketId];
+
         require(
-            basket.basketOwner == msg.sender,
+            uniqueBasketMapping[basketId].basketOwner == msg.sender,
             "only owner can modify the weights of basket"
         );
-        basket.weights = weights;
-        emit weightsChanged(basketId, basket);
+        uniqueBasketMapping[basketId].weights = weights;
     }
 
     /**

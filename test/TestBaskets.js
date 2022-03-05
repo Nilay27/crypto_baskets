@@ -152,6 +152,10 @@ describe("Baskets.sol", () => {
         tokens = [weth, usdt, wbtc];
         oldWeights = [33, 33, 34];
         newWeights = [20, 20, 60];
+        bnWeights = []
+        for (const idx in newWeights){
+          bnWeights.push(BigNumber.from(newWeights[idx]));
+        }
         id = "basket_1";
         await basketContract
           .connect(account1)
@@ -160,8 +164,11 @@ describe("Baskets.sol", () => {
           .connect(account1)
           .resetWeights(id, newWeights);
         let receipt = await tx.wait();
-        expect(receipt.events[0].args[1].weights[0]).to.deep.equal(
-          BigNumber.from(20)
+        let basketNew = await basketContract
+          .connect(account1)
+          .getBasketById(id)
+        expect(basketNew.weights).to.deep.equal(
+          bnWeights
         );
       });
     });

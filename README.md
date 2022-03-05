@@ -64,6 +64,7 @@ A decentralized database to store user-data i.e their public address and corresp
 ## TODO/Areas For Improvement
 - Add scripts to run tests on Rinkeby instead of localhost for the code to be production ready.
 - A Microservice which will notify the user of investment due date and take approval from the user to trigger the contract on regular intervals to perform systematic payment.
+- Add functionality for basket creation management fee.
 - Cleanup Subscribe.sol, add NatSpec and make it gas optimised
 - Write Tests for Subscribe.sol
 - Add functionality of Exact output refund ETH in case of ExactOutPutSingle

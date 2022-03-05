@@ -227,7 +227,7 @@ describe("Baskets.sol", () => {
             .transferBasketOwnership(account2.address, id2)
         ).to.be.revertedWith("basket does not exist");
       });
-      it("should revert when not initiated by owner does not exist", async function () {
+      it("should revert when not initiated by owner", async function () {
         tokens = [weth, usdt, wbtc];
         weights = [33, 33, 34];
         id = "basket_1";

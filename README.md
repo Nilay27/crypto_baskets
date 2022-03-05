@@ -10,19 +10,19 @@ CryptoBaskets is a decentralized platform where users can invest in crypto marke
 
 ## Front End: 
 
-Front end of the app is hosted on Web3.0 and made using ReactJS which is used to design the landing pages and also for the integration and usage of smart contract functions.
+Front end of the app is made using ReactJS which is used to design the landing pages and also for the integration and usage of smart contract functions.
 
 ## Smart Contracts:
 
 We have 3 smart contracts:
 ### 1. Baskets.sol
-This contract creates the baskets with the user given weight inputs and also mapping of users to baskets, 
+This contract creates the baskets with the user given weight inputs and also contains mapping of creators to baskets.
 
 ### 2. Subscribe.sol
 This has multiple methods: 
-- add - to subscribe to a basket
+- deposit - to subscribe to a basket and purchase tokens with pre-defined weights
 - exit - to completely exit the basket
-- invest more - to invest more as a part of recurring payment
+- add - to invest more as a part of recurring payment
 - partial exit - if the user wants to exit partially
 - rebalance - if the weights of the baskets are changed, this function rebalances the basket position accordingly
 - getPrice-  gets prices of the tokens from Chainlink in order to determine which token should be bought in what proportion while rebalancing or depositing more. 
@@ -33,7 +33,6 @@ Performs swaps on uniswap
 ## Backend:
 
 A decentralized database to store user-data i.e their public address and corresponding basket subscribed.
-A Microservice which will notify the user of investment due date and take approval from the user to trigger the contract on regular intervals to perform systematic payment.
 
 
 # Installation
@@ -60,10 +59,11 @@ A Microservice which will notify the user of investment due date and take approv
     ``` 
 ## Security Considerations
 
--   The Repository is currently not Audited and Does is only meant for testing purposes on Testnets (Rinkeby, Ropsten etc.)
+-   The Repository is currently not audited and is only meant for testing purposes on Testnets (Rinkeby, Ropsten etc.)
 
-## Areas For Improvement
-
+## TODO/Areas For Improvement
+- Add scripts to run tests on Rinkeby instead of localhost for the code to be production ready.
+- A Microservice which will notify the user of investment due date and take approval from the user to trigger the contract on regular intervals to perform systematic payment.
 - Cleanup Subscribe.sol, add NatSpec and make it gas optimised
 - Write Tests for Subscribe.sol
 - Add functionality of Exact output refund ETH in case of ExactOutPutSingle

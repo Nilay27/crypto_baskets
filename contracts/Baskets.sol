@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.2;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
@@ -13,15 +13,19 @@ contract Baskets is Ownable {
 
     struct Basket {
         bool active;
-        string BasketID;
+        string basketID;
         address[] tokens;
         uint256[] weights;
         address basketOwner;
     }
 
     /**
-        @dev modifier to validate the baskets and perform trivial checks before creation
+        @dev modifiers to validate the baskets and perform trivial checks before creation
      */
+    modifier checkBasketExists(string memory id) {
+        require(uniqueBasketMapping[id].active, "basket does not exists");
+        _;
+    }
     modifier validateBasket(
         address[] memory tokens,
         uint256[] memory weights,
@@ -63,7 +67,7 @@ contract Baskets is Ownable {
         string memory id
     ) external validateBasket(tokens, weights, id) validateWeights(weights) {
         Basket memory basket = Basket({
-            BasketID: id,
+            basketID: id,
             tokens: tokens,
             weights: weights,
             basketOwner: msg.sender,
@@ -82,8 +86,8 @@ contract Baskets is Ownable {
     function resetWeights(string memory basketId, uint256[] memory weights)
         external
         validateWeights(weights)
+        checkBasketExists(basketId)
     {
-        require(uniqueBasketMapping[basketId].active, "basket does not exist");
         require(
             uniqueBasketMapping[basketId].weights.length == weights.length,
             "new and old basket weights are not of equal lengths"
@@ -104,12 +108,9 @@ contract Baskets is Ownable {
     function getBasketById(string memory _basketId)
         public
         view
+        checkBasketExists(_basketId)
         returns (Basket memory)
     {
-        require(
-            uniqueBasketMapping[_basketId].active,
-            "basket does not exists"
-        );
         Basket memory basket = uniqueBasketMapping[_basketId];
         return basket;
     }
@@ -119,8 +120,8 @@ contract Baskets is Ownable {
      */
     function transferBasketOwnership(address _newOwner, string memory basketId)
         external
+        checkBasketExists(basketId)
     {
-        require(uniqueBasketMapping[basketId].active, "basket does not exist");
         require(
             msg.sender == uniqueBasketMapping[basketId].basketOwner,
             "you are not the owner of the basket"

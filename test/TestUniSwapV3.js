@@ -35,7 +35,6 @@ describe("Swap", () => {
       expect(receipt.events[0].args[0]).to.equal(account1.address);
       expect(receipt.events[0].args[1][2]).to.deep.equal(tokens);
       let balanceBeforeSwap = await ethers.provider.getBalance(account.address);
-      console.log(balanceBeforeSwap);
       await expect(
         swapContract
           .connect(account1)

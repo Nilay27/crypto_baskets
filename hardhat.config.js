@@ -9,7 +9,7 @@
  const LOCAL_NETWORK = "LOCAL_NETWORK"
  
  // By default network is set to local, change it to TEST_NETWORK to make a switch
- const NETWORK = TEST_NETWORK
+ const NETWORK = LOCAL_NETWORK
  
  const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
  const WALLET_PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY;
@@ -21,10 +21,10 @@
         url: `https://rinkeby.infura.io/v3/${ALCHEMY_API_KEY}`,
         accounts: [`0x${WALLET_PRIVATE_KEY}`]
       },
-      polygon: {
-            url: `https://polygon-mumbai.infura.io/v3/${POLYGON_ALCHEMY_API_KEY}`,
-            accounts: [`0x${POLYGON_WALLET_PRIVATE_KEY}`]
-          }
+      // polygon: {
+      //       url: `https://polygon-mumbai.infura.io/v3/${POLYGON_ALCHEMY_API_KEY}`,
+      //       accounts: [`0x${POLYGON_WALLET_PRIVATE_KEY}`]
+      //     }
    }
  }
  

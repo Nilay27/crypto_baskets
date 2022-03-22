@@ -34,6 +34,11 @@ Contract to perform swaps on uniswap.
 
 A decentralized database to store user-data i.e their public address and corresponding basket subscribed.
 
+## Branch1
+Adding branch1 changes after which branch2 changes will be added.
+Lets see if there is any merge conflict
+while completing the PR.
+
 ## Branch2 changes                                                 
 Adding branch2 changes after which branch2 changes will be added.
 Lets see if there is any merge conflict for branch2

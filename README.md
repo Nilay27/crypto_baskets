@@ -28,7 +28,7 @@ This has multiple methods:
 - getPrice-  gets prices of the tokens from Chainlink in order to determine which token should be bought in what proportion while rebalancing or depositing more. 
 
 ### 3. Swap.sol
-Performs swaps on uniswap
+Contract to perform swaps on uniswap.
 
 ## Backend:
 
@@ -38,6 +38,12 @@ A decentralized database to store user-data i.e their public address and corresp
 Adding branch1 changes after which branch2 changes will be added.
 Lets see if there is any merge conflict
 while completing the PR.
+
+## Branch2 changes                                                 
+Adding branch2 changes after which branch2 changes will be added.
+Lets see if there is any merge conflict for branch2
+while completing the PR for branch2
+
 
 # Installation
 -  Clone this Repo:

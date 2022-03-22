@@ -28,7 +28,7 @@ This has multiple methods:
 - getPrice-  gets prices of the tokens from Chainlink in order to determine which token should be bought in what proportion while rebalancing or depositing more. 
 
 ### 3. Swap.sol
-Performs swaps on uniswap
+Contract to perform swaps on uniswap.
 
 ## Backend:
 

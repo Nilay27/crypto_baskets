@@ -16,7 +16,7 @@ Front end of the app is made using ReactJS which is used to design the landing p
 
 We have 3 smart contracts:
 ### 1. Baskets.sol
-This contract creates the baskets with the user given weight inputs and also contains mapping of creators to baskets.
+This contract creates the baskets with the user given weight inputs and also contains mapping of creators to their corresponding created baskets.
 
 ### 2. Subscribe.sol
 This has multiple methods: 

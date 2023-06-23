@@ -6,8 +6,7 @@ CryptoBaksets allows retail investors to invest in custom thematic baskets and D
 
 CryptoBaskets is a decentralized platform where users can invest in crypto market themes via trading baskets. A basket can be rule-based as well as involve discretion. Our team will publish high-quality baskets and we also welcome external experts/traders opening up their basket designs for a subscription. Basket creators will earn management fees as a proportion of the assets under management. 
 
-## View the demo at:
-[Youtube](https://www.youtube.com/watch?v=DWJqKzgicHk&ab_channel=KumarNilay)
+### View the demo at: [Youtube](https://www.youtube.com/watch?v=DWJqKzgicHk&ab_channel=KumarNilay)
 # Architecture:
 
 ## Front End: 
